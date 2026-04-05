@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.StringJoiner;
@@ -56,13 +56,13 @@ public class NotepadServieImpl implements ArchivoService {
   }
 
   private File createFile(){
-    String fileName = String.format(properties.localNotepadName(), getFechaHora("yyyy-MM-dd-hhmmss"));
+    String fileName = String.format(properties.localNotepadNamePattern(), getFechaHora("yyyy-MM-dd"));
     return new File(Paths.get(properties.localPath(), fileName).toString());
   }
 
   private String getFechaHora(String pattern) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-    return LocalDateTime.now().format(formatter);
+    return LocalDate.now().format(formatter);
   }
 
   private List<Usuario> consultaUsuarios() {

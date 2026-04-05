@@ -4,13 +4,19 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "utils")
 public record AppProperties(
-        String localNotepadName,
-        String localExcelName,
+        String localNotepadNamePattern,
+        String localExcelNamePattern,
         String localPath,
 
-        String remoteNotepadName,
-        String remoteExcelName,
+        String remoteNotepadNamePattern,
+        String remoteExcelNamePattern,
         String remotePath,
 
+        String sftpHost,
+        String sftpPort,
+        String sftpUser,
+        String sftpPassword,
+
         String gestorUsuarioServiceUrl
-){}
+) {
+}

@@ -27,4 +27,16 @@ public class SftpController {
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
+  @GetMapping("/descarga-notepad")
+  public ResponseEntity<Void> getNotepad(){
+    sftpService.descargarNotepad();
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
+
+  @GetMapping("/descarga-excel")
+  public ResponseEntity<Void> getExcel(){
+    sftpService.descargarExcel();
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
+
 }

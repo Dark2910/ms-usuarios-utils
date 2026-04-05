@@ -28,7 +28,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -59,7 +59,7 @@ public class ExcelServiceImpl implements ArchivoService {
       return ResultFactory.success();
     }
     catch (Throwable e) {
-      LOG.error("Incidencia al crear archivo Excel");
+      LOG.error("Incidencia al crear archivo - excel");
       throw new Error500(List.of("Incidencia al crearArchivo - excel"), e);
     }
   }
@@ -70,9 +70,7 @@ public class ExcelServiceImpl implements ArchivoService {
 
     for (int i = 0; i < properties.length; i++) {
       sheet.autoSizeColumn(i);
-
-      int anchoActual = sheet.getColumnWidth(i);
-      sheet.setColumnWidth(i, anchoActual + 1000);
+      sheet.setColumnWidth(i, (sheet.getColumnWidth(i) + 1000));
     }
   }
 
@@ -90,7 +88,6 @@ public class ExcelServiceImpl implements ArchivoService {
     style.setVerticalAlignment(VerticalAlignment.CENTER);
     style.setFillForegroundColor(IndexedColors.SEA_GREEN.getIndex());
     style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
     style.setFont(font);
 
     Row row = sheet.createRow(0);
@@ -136,13 +133,13 @@ public class ExcelServiceImpl implements ArchivoService {
   }
 
   private File createFile() {
-    String fileName = String.format(properties.localExcelName(), getFechaHora("yyyy-MM-dd-hhmmss"));
+    String fileName = String.format(properties.localExcelNamePattern(), getFechaHora("yyyy-MM-dd"));
     return new File(Paths.get(properties.localPath(), fileName).toString());
   }
 
   private String getFechaHora(String pattern) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-    return LocalDateTime.now().format(formatter);
+    return LocalDate.now().format(formatter);
   }
 
   private List<Usuario> consultaUsuarios() {

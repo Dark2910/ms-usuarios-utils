@@ -45,7 +45,7 @@ public class UsuarioDaoJdbcImpl implements UsuarioDao {
               : Collections.emptyList();
     }
     catch (Exception e) {
-      LOG.error("Error al consultar el microservicio de usuarios en: {}", properties.gestorUsuarioServiceUrl(), e);
+      LOG.error("Incidencia al consultar el microservicio de usuarios en: {}", properties.gestorUsuarioServiceUrl());
       throw new Error503(List.of("Incidencia al consultar registros"), e);
     }
   }
