@@ -47,7 +47,7 @@ public class SftpServiceImpl implements SftpService {
   @Override
   public void descargarNotepad() {
     String remoteFileName = getFileName(properties.remoteNotepadNamePattern());
-    String remoteFilenamePath = properties.remotePath() + "/" + remoteFileName;
+    String remoteFilenamePath = buildRemotePath(properties.remotePath(), remoteFileName);
 
     String localFileName = getFileName(properties.localNotepadNamePattern());
     Path localFilenamePath = Paths.get(properties.localPath(), localFileName);
@@ -58,7 +58,7 @@ public class SftpServiceImpl implements SftpService {
   @Override
   public void descargarExcel() {
     String remoteFileName = getFileName(properties.remoteExcelNamePattern());
-    String remoteFilenamePath = properties.remotePath() + "/" + remoteFileName;
+    String remoteFilenamePath = buildRemotePath(properties.remotePath(), remoteFileName);
 
     String localFileName = getFileName(properties.localExcelNamePattern());
     Path localFilenamePath = Paths.get(properties.localPath(), localFileName);
@@ -73,6 +73,14 @@ public class SftpServiceImpl implements SftpService {
   private String getFechaHora(String pattern) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
     return LocalDate.now().format(formatter);
+  }
+
+  private String buildRemotePath(String path, String fileName) {
+    String normalizedBase = path.replace("\\", "/");
+    if (!normalizedBase.endsWith("/")) {
+      normalizedBase += "/";
+    }
+    return normalizedBase + fileName;
   }
 
   private Boolean getConnection() {
