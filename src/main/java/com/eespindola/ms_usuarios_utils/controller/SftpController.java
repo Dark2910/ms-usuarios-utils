@@ -1,5 +1,6 @@
 package com.eespindola.ms_usuarios_utils.controller;
 
+import com.eespindola.ms_usuarios_utils.dao.SftpDao;
 import com.eespindola.ms_usuarios_utils.service.SftpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,20 +22,26 @@ public class SftpController {
     this.sftpService = sftpServiceImpl;
   }
 
-  @GetMapping("/share-file")
-  public ResponseEntity<Void> getFile(){
-
+  @GetMapping("/enviar-notepad")
+  public ResponseEntity<Void> pushNotepad(){
+    sftpService.enviarNotepad();
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  @GetMapping("/descarga-notepad")
-  public ResponseEntity<Void> getNotepad(){
+  @GetMapping("/enviar-excel")
+  public ResponseEntity<Void> pushExcel(){
+    sftpService.enviarExcel();
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
+
+  @GetMapping("/descargar-notepad")
+  public ResponseEntity<Void> pullNotepad(){
     sftpService.descargarNotepad();
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  @GetMapping("/descarga-excel")
-  public ResponseEntity<Void> getExcel(){
+  @GetMapping("/descargar-excel")
+  public ResponseEntity<Void> pullExcel(){
     sftpService.descargarExcel();
     return new ResponseEntity<>(HttpStatus.OK);
   }

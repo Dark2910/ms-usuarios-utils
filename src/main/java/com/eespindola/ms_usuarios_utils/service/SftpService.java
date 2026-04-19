@@ -1,15 +1,17 @@
 package com.eespindola.ms_usuarios_utils.service;
 
-import java.io.InputStream;
-
 public interface SftpService {
 
-//  InputStream descargarArchivo(Boolean canDisconnect);
+  void enviarNotepad();
 
+  void enviarExcel();
 
   void descargarNotepad();
+
   void descargarExcel();
 
-  void descargarDirectorio ();
+//  void enviarDirectorio();
+
+//  void descargarDirectorio();
 
 }
