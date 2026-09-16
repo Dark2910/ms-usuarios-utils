@@ -1,6 +1,5 @@
 package com.eespindola.ms_usuarios_utils.controller;
 
-import com.eespindola.ms_usuarios_utils.dao.SftpDao;
 import com.eespindola.ms_usuarios_utils.service.SftpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

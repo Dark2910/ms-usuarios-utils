@@ -4,71 +4,49 @@ import com.eespindola.ms_usuarios_utils.configuration.AppProperties;
 import com.eespindola.ms_usuarios_utils.dao.UsuarioDao;
 import com.eespindola.ms_usuarios_utils.exception.impl.Error500;
 import com.eespindola.ms_usuarios_utils.model.Result;
-import com.eespindola.ms_usuarios_utils.model.Usuario;
-import com.eespindola.ms_usuarios_utils.service.ArchivoService;
+import com.eespindola.ms_usuarios_utils.model.UsuarioExportDto;
 import com.eespindola.ms_usuarios_utils.utils.ResultFactory;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service("excelServiceImpl")
-public class ExcelServiceImpl implements ArchivoService {
-  private static final Logger LOG = LoggerFactory.getLogger(ExcelServiceImpl.class);
+public class ExcelServiceImpl extends AbstractDocumentService {
 
-  private final UsuarioDao usuarioDaoJdbc;
-  private final AppProperties properties;
-
-  public ExcelServiceImpl(
-          @Qualifier("usuariosDaoJdbcImpl") UsuarioDao usuarioDaoJdbcImpl,
-          AppProperties appProperties
-  ) {
-    this.usuarioDaoJdbc = usuarioDaoJdbcImpl;
-    this.properties = appProperties;
+  public ExcelServiceImpl(@Qualifier("usuariosDaoJdbcImpl") UsuarioDao usuarioDaoJdbcImpl,
+                          AppProperties appProperties) {
+    super(usuarioDaoJdbcImpl, appProperties);
   }
 
   @Override
   public Result<Void> crearArchivo() {
-    try (FileOutputStream fileOutput = new FileOutputStream(createFile());
+    LOG.info("Creando archivo Excel");
+    try (FileOutputStream fileOutput = new FileOutputStream(createFile(properties.localExcelNamePattern()));
          Workbook workbook = new XSSFWorkbook()) {
       Sheet sheet = workbook.createSheet("Usuarios");
       crearHeader(workbook, sheet);
       crearFilas(workbook, sheet);
       ajustarColumnas(sheet);
       workbook.write(fileOutput);
+      LOG.info("Archivo Excel creado exitosamente");
       return ResultFactory.success();
     }
     catch (Throwable e) {
-      LOG.error("Incidencia al crear archivo - excel");
+      LOG.error("Error al crear archivo Excel", e);
       throw new Error500(List.of("Incidencia al crearArchivo - excel"), e);
     }
   }
 
   private void ajustarColumnas(Sheet sheet) {
-    Class<Usuario> clazz = Usuario.class;
-    Field[] properties = clazz.getDeclaredFields();
+    Class<UsuarioExportDto> clazz = UsuarioExportDto.class;
+    Field[] fields = clazz.getDeclaredFields();
 
-    for (int i = 0; i < properties.length; i++) {
+    for (int i = 0; i < fields.length; i++) {
       sheet.autoSizeColumn(i);
       sheet.setColumnWidth(i, (sheet.getColumnWidth(i) + 1000));
     }
@@ -92,13 +70,13 @@ public class ExcelServiceImpl implements ArchivoService {
 
     Row row = sheet.createRow(0);
 
-    Class<Usuario> clazz = Usuario.class;
-    Field[] properties = clazz.getDeclaredFields();
+    Class<UsuarioExportDto> clazz = UsuarioExportDto.class;
+    Field[] fields = clazz.getDeclaredFields();
 
     int i = 0;
-    for (Field propertie : properties) {
+    for (Field field : fields) {
       Cell cell = row.createCell(i++);
-      cell.setCellValue(propertie.getName());
+      cell.setCellValue(field.getName());
       cell.setCellStyle(style);
     }
   }
@@ -115,35 +93,20 @@ public class ExcelServiceImpl implements ArchivoService {
     style.setFont(font);
 
     int rowNum = 1;
-    List<Usuario> usuarios = consultaUsuarios();
+    List<UsuarioExportDto> usuarios = consultarUsuariosExport();
 
-    for (Usuario usuario : usuarios) {
+    for (UsuarioExportDto usuario : usuarios) {
       Row row = sheet.createRow(rowNum++);
-//      row.createCell(0).setCellValue(usuario.getIdUsuario());
-      row.createCell(1).setCellValue(usuario.getFolioId());
-      row.createCell(2).setCellValue(usuario.getNombre());
-      row.createCell(3).setCellValue(usuario.getApellidoPaterno());
-      row.createCell(4).setCellValue(usuario.getApellidoMaterno());
-      row.createCell(5).setCellValue(usuario.getFechaNacimiento());
-      row.createCell(6).setCellValue(usuario.getUsername());
-      row.createCell(7).setCellValue(usuario.getEmail());
-      row.createCell(8).setCellValue(usuario.getPassword());
-      row.createCell(9).setCellValue(usuario.getStatus());
+      row.createCell(0).setCellValue(usuario.getIdUsuario() != null ? usuario.getIdUsuario().toString() : "");
+      row.createCell(1).setCellValue(usuario.getFolioId() != null ? usuario.getFolioId() : "");
+      row.createCell(2).setCellValue(usuario.getNombre() != null ? usuario.getNombre() : "");
+      row.createCell(3).setCellValue(usuario.getApellidoPaterno() != null ? usuario.getApellidoPaterno() : "");
+      row.createCell(4).setCellValue(usuario.getApellidoMaterno() != null ? usuario.getApellidoMaterno() : "");
+      row.createCell(5).setCellValue(usuario.getFechaNacimiento() != null ? usuario.getFechaNacimiento() : "");
+      row.createCell(6).setCellValue(usuario.getUsername() != null ? usuario.getUsername() : "");
+      row.createCell(7).setCellValue(usuario.getEmail() != null ? usuario.getEmail() : "");
+      row.createCell(8).setCellValue(usuario.getStatus() != null ? usuario.getStatus() : "");
     }
-  }
-
-  private File createFile() {
-    String fileName = String.format(properties.localExcelNamePattern(), getFechaHora("yyyy-MM-dd"));
-    return new File(Paths.get(properties.localPath(), fileName).toString());
-  }
-
-  private String getFechaHora(String pattern) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-    return LocalDate.now().format(formatter);
-  }
-
-  private List<Usuario> consultaUsuarios() {
-    return usuarioDaoJdbc.consultarUsuarios();
   }
 
 }

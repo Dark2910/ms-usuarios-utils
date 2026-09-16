@@ -42,7 +42,7 @@ public class SftpDaoImpl implements SftpDao {
   private void openConnection() {
     try {
       JSch jSch = new JSch();
-      session = jSch.getSession(properties.sftpUser(), properties.sftpHost(), Integer.parseInt(properties.sftpPort()));
+      session = jSch.getSession(properties.sftpUser(), properties.sftpHost(), properties.sftpPort());
       session.setConfig("StrictHostKeyChecking", "no");
 
       LOG.info("Iniciando sesion");

@@ -1,0 +1,64 @@
+spring:
+  application:
+    name: ms-usuarios-utils
+  profiles:
+    active: dev
+
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+logging:
+  level:
+    root: INFO
+    com.eespindola.ms_usuarios_utils: DEBUG
+    AUDIT: INFO
+  file:
+    name: logs/ms-usuarios-utils.log
+    max-size: 10MB
+    max-history: 30
+    total-size-cap: 1GB
+
+utils:
+  # Local Storage Configuration
+  local-path: ./archivos
+  local-notepad-name-pattern: "usuarios_%s.txt"
+  local-excel-name-pattern: "usuarios_%s.xlsx"
+
+  # Remote Storage Configuration (SFTP)
+  remote-path: /uploads/usuarios
+  remote-notepad-name-pattern: "usuarios_%s.txt"
+  remote-excel-name-pattern: "usuarios_%s.xlsx"
+
+  # SFTP Connection Configuration
+  sftp-host: ${SFTP_HOST:localhost}
+  sftp-port: ${SFTP_PORT:22}
+  sftp-user: ${SFTP_USER:usuario}
+  sftp-password: ${SFTP_PASSWORD:password}
+
+  # External Service URLs
+  gestor-usuario-service-url: ${GESTOR_USUARIO_URL:http://localhost:8081}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+logging:
+  level:
+    root: INFO
+    com.eespindola.ms_usuarios_utils: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+logging:
+  level:
+    root: WARN
+    com.eespindola.ms_usuarios_utils: INFO
