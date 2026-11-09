@@ -55,6 +55,7 @@ public class Usuario {
   // ==========================================
 
   public Usuario() {
+	  super();
   }
 
   private Usuario(UsuarioBuilder builder) {
